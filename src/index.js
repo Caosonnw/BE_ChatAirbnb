@@ -7,12 +7,6 @@ import { PrismaClient } from "@prisma/client";
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static("."));
-
-app.use(rootRouter);
-
 app.listen(8080, () => {
   console.log("Server is running on port 8080");
 });
@@ -23,6 +17,11 @@ const io = new Server(httpServer, {
     origin: "*",
   },
 });
+app.use(cors());
+app.use(express.json());
+app.use(express.static("."));
+
+app.use(rootRouter);
 
 httpServer.listen(8081, () => {
   console.log("Socket is running on port 8081");
