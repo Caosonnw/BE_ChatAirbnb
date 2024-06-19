@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id                                         Int            @id
+  name                                       String         @db.VarChar(255)
+  email                                      String         @unique(map: "email") @db.VarChar(255)
+  password                                   String?        @db.VarChar(255)
+  phone                                      String?        @db.VarChar(20)
+  birthday                                   DateTime?      @db.Date
+  avatar                                     String?        @db.VarChar(255)
+  gender                                     Boolean?
+  role                                       String?        @db.VarChar(255)
+  status                                     String         @default("error") @db.VarChar(255)
+  chat                                       chat[]
+  user_friends_user_friends_idTousers        user_friends[] @relation("user_friends_idTousers")
+  user_friends_user_friends_friend_idTousers user_friends[] @relation("user_friends_friend_idTousers")
+}
+
+model chat {
+  id      Int       @id @unique(map: "id") @default(autoincrement())
+  user_id Int?
+  content String?   @db.VarChar(255)
+  room_id String?   @db.VarChar(20)
+  date    DateTime? @db.DateTime(0)
+  users   users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model user_friends {
+  id                                  Int
+  friend_id                           Int
+  users_user_friends_idTousers        users @relation("user_friends_idTousers", fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_friends_ibfk_1")
+  users_user_friends_friend_idTousers users @relation("user_friends_friend_idTousers", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_friends_ibfk_2")
+
+  @@id([id, friend_id])
+  @@index([friend_id], map: "friend_id")
+}
